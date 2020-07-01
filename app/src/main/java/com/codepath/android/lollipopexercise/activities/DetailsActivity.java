@@ -1,7 +1,9 @@
 package com.codepath.android.lollipopexercise.activities;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +42,18 @@ public class DetailsActivity extends AppCompatActivity {
         tvPhone = (TextView) findViewById(R.id.tvPhone);
         vPalette = findViewById(R.id.vPalette);
         fab = findViewById(R.id.fab);
+
+        // Dial contact's number.
+        // This shows the dialer with the number, allowing you to explicitly initiate the call.
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String uri = "tel:" + mContact.getNumber();
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
         // Extract contact from bundle
         mContact = (Contact)getIntent().getExtras().getSerializable(EXTRA_CONTACT);
 
