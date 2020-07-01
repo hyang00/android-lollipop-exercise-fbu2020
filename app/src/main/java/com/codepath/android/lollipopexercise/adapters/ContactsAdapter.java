@@ -6,6 +6,8 @@ import android.content.Intent;
 //import android.os.Parcel;
 //import org.parceler.Parcels;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +15,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.codepath.android.lollipopexercise.R;
 import com.codepath.android.lollipopexercise.activities.DetailsActivity;
 import com.codepath.android.lollipopexercise.models.Contact;
@@ -26,6 +33,7 @@ import java.util.List;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.VH> {
     private Activity mContext;
     private List<Contact> mContacts;
+    private final Integer NUMBER_OF_COLORS = 24;
 
     public ContactsAdapter(Activity context, List<Contact> contacts) {
         mContext = context;
@@ -44,11 +52,47 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.VH> {
 
     // Display data at the specified position
     @Override
-    public void onBindViewHolder(VH holder, int position) {
+    public void onBindViewHolder(final VH holder, int position) {
         Contact contact = mContacts.get(position);
         holder.rootView.setTag(contact);
         holder.tvName.setText(contact.getName());
-        Glide.with(mContext).load(contact.getThumbnailDrawable()).centerCrop().into(holder.ivProfile);
+        // Use Glide to get a callback with a Bitmap which can then
+        // be used to extract a vibrant color from the Palette.
+        // Define an asynchronous listener for image loading
+        CustomTarget<Bitmap> target = new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                // TODO 1. Instruct Glide to load the bitmap into the `holder.ivProfile` profile image view
+                Glide.with(mContext).asBitmap().load(resource).into(holder.ivProfile);
+                // TODO 2. Use generate() method from the Palette API to get the vibrant color from the bitmap
+                // This is the quick and easy integration path.
+                // May not be optimal (since you're dipping in and out of threads)
+                Palette.from(resource).maximumColorCount(NUMBER_OF_COLORS).generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        // Get the "vibrant" color swatch based on the bitmap
+                        Palette.Swatch vibrant = palette.getVibrantSwatch();
+                        if (vibrant != null) {
+                            // Set the background color of a layout based on the vibrant color
+                            holder.vPalette.setBackgroundColor(vibrant.getRgb());
+                            // Update the title TextView with the proper text color
+                            //titleView.setTextColor(vibrant.getTitleTextColor());
+                        }
+                    }
+                });
+                // Set the result as the background color for `holder.vPalette` view containing the contact's name.
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                // can leave empty
+            }
+        };
+
+        // TODO: Clear the bitmap and the background color in adapter
+
+        // Instruct Glide to load the bitmap into the asynchronous target defined above
+        Glide.with(mContext).asBitmap().load(contact.getThumbnailDrawable()).centerCrop().into(target);
     }
 
     @Override
