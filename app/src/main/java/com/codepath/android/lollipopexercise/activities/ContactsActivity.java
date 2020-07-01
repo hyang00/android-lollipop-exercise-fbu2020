@@ -83,6 +83,9 @@ public class ContactsActivity extends AppCompatActivity {
                         .setAction("Undo", myOnClickListener)
                         .show(); // Don’t forget to show!
                 return true;
+            /*case android.R.id.home:
+                supportFinishAfterTransition();
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }

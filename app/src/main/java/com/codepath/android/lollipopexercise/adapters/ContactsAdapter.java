@@ -1,6 +1,7 @@
 package com.codepath.android.lollipopexercise.adapters;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 //import android.os.Parcel;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+//import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -127,7 +131,12 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.VH> {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("EXTRA_CONTACT", contact);
                         intent.putExtras(bundle);
-                        context.startActivity(intent);
+                        Pair<View, String> p1 = Pair.create((View)ivProfile, "profile");
+                        Pair<View, String> p2 = Pair.create(vPalette, "palette");
+                        Pair<View, String> p3 = Pair.create((View)tvName, "text");
+                        ActivityOptionsCompat options = ActivityOptionsCompat.
+                                makeSceneTransitionAnimation(mContext, p1, p2, p3);
+                        context.startActivity(intent, options.toBundle());
                     }
                 }
             });
