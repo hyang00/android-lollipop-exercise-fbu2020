@@ -76,6 +76,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.VH> {
                             // Set the background color of a layout based on the vibrant color
                             holder.vPalette.setBackgroundColor(vibrant.getRgb());
                             // Update the title TextView with the proper text color
+                            holder.tvName.setTextColor(vibrant.getTitleTextColor());
                             //titleView.setTextColor(vibrant.getTitleTextColor());
                         }
                     }
